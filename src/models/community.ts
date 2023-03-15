@@ -18,4 +18,4 @@ const CommunitySchema = new Schema<CommunitySchemaType>({
   updated_at: { type: Date, required: true },
 });
 
-export const Community = model<CommunitySchemaType>("Community", CommunitySchema);
+export const CommunityModel = model<CommunitySchemaType>("Community", CommunitySchema);

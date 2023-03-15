@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
 
-export const createRole = (req: Request, res: Response) => {};
+export const createRole = async (req: Request, res: Response) => {
+  try {
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+};
 
-export const getAllRoles = (req: Request, res: Response) => {};
+export const getAllRoles = async (req: Request, res: Response) => {};

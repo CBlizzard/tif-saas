@@ -16,4 +16,4 @@ const MemberSchema = new Schema<MemberSchemaType>({
   created_at: { type: Date, required: true },
 });
 
-export const Member = model<MemberSchemaType>("Member", MemberSchema);
+export const MemberModel = model<MemberSchemaType>("Member", MemberSchema);

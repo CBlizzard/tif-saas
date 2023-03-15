@@ -12,15 +12,16 @@ const app: Express = express();
 const PORT = process.env.PORT || 8000;
 dotenv.config();
 
+app.use(express.json());
 app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("Hello");
 });
-app.use("v1/community", communityRoutes);
-app.use("v1/member", memberRoutes);
-app.use("v1/role", roleRoutes);
-app.use("v1/auth", userRoutes);
+app.use("/v1/community", communityRoutes);
+app.use("/v1/member", memberRoutes);
+app.use("/v1/role", roleRoutes);
+app.use("/v1/auth", userRoutes);
 
 // connect to DB
 connect(process.env.MONGO_URI!)

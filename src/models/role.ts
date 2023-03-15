@@ -14,4 +14,4 @@ const RoleSchema = new Schema<RoleSchemaType>({
   updated_at: { type: Date, required: true },
 });
 
-export const Role = model<RoleSchemaType>("Role", RoleSchema);
+export const RoleModel = model<RoleSchemaType>("Role", RoleSchema);
