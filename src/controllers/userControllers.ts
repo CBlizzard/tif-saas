@@ -4,7 +4,8 @@ import bcrypt from "bcryptjs";
 import validator from "validator";
 import { Snowflake } from "@theinternetfolks/snowflake";
 import { UserModel } from "../models/userModel";
-import { createAuthToken, getToken } from "../utils/utils";
+import { createAuthToken } from "../utils/createAuthToken";
+import { getToken } from "../utils/getToken";
 
 // ======================
 interface DecodedType {
