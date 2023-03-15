@@ -6,7 +6,7 @@ import {
   getAllCommunityMembers,
   getMyOwnedCommunity,
   getMyJoinedCommunity,
-} from "../controllers/community";
+} from "../controllers/communityControllers";
 
 router.post("/community", createCommunity);
 router.get("/community", getAllCommunity);

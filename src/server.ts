@@ -3,10 +3,10 @@ import { connect } from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import communityRoutes from "./routes/community.js";
-import memberRoutes from "./routes/member.js";
-import roleRoutes from "./routes/role.js";
-import userRoutes from "./routes/user.js";
+import communityRoutes from "./routes/communityRoutes.js";
+import memberRoutes from "./routes/memberRoutes.js";
+import roleRoutes from "./routes/roleRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 const app: Express = express();
 const PORT = process.env.PORT || 8000;
