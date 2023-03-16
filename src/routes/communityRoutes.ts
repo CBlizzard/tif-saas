@@ -8,10 +8,10 @@ import {
   getMyJoinedCommunity,
 } from "../controllers/communityControllers";
 
-router.post("/community", createCommunity);
-router.get("/community", getAllCommunity);
-router.get("/community/:id/members", getAllCommunityMembers);
-router.get("/community/me/owner", getMyOwnedCommunity);
-router.get("/community/me/member", getMyJoinedCommunity);
+router.post("/", createCommunity);
+router.get("/", getAllCommunity);
+router.get("/:id/members", getAllCommunityMembers);
+router.get("/me/owner", getMyOwnedCommunity);
+router.get("/me/member", getMyJoinedCommunity);
 
 export default router;

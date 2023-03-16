@@ -11,7 +11,7 @@ interface CommunitySchemaType {
 
 const CommunitySchema = new Schema<CommunitySchemaType>({
   id: { type: String, required: true, unique: true },
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
   slug: { type: String, required: true, unique: true },
   owner: { type: String, required: true },
   created_at: { type: Date, required: true },
