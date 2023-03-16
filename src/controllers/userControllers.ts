@@ -1,19 +1,10 @@
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import validator from "validator";
 import { Snowflake } from "@theinternetfolks/snowflake";
 import { UserModel } from "../models/userModel";
 import { createToken } from "../utils/createToken";
-import { getToken } from "../utils/getToken";
-
-// ======================
-interface DecodedType {
-  id: string;
-  email: string;
-  iat: number;
-  exp: number;
-}
+import { getIdFromToken } from "../utils/getIdFromToken";
 
 // ======================
 export const signUp = async (req: Request, res: Response) => {
@@ -98,14 +89,8 @@ export const signIn = async (req: Request, res: Response) => {
 };
 
 export const getMe = async (req: Request, res: Response) => {
-  const token = getToken(req);
-  if (!token) {
-    throw new Error("Authorization token is required");
-  }
-
   try {
-    const decoded = jwt.verify(token, process.env.SECRET_STRING!) as DecodedType;
-    const userID = decoded.id;
+    const userID = getIdFromToken(req);
 
     const user = await UserModel.findOne({ id: userID });
     if (!user) {
