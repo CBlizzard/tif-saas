@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+import { Request, Response, response } from "express";
 import validator from "validator";
 import { Snowflake } from "@theinternetfolks/snowflake";
 import { CommunityModel } from "../models/communityModel";
+import { MemberModel } from "../models/memberModel";
+import { UserModel } from "../models/userModel";
+import { RoleModel } from "../models/roleModel";
 import { getIdFromToken } from "../utils/getIdFromToken";
-import { idText } from "typescript";
 
 export const createCommunity = async (req: Request, res: Response) => {
   const { name } = req.body;
@@ -77,7 +77,52 @@ export const getAllCommunity = async (req: Request, res: Response) => {
 };
 
 export const getAllCommunityMembers = async (req: Request, res: Response) => {
+  if (!req.params.id) return res.status(400).json({ message: "id is required" });
+  const communityId = req.params.id;
+
   try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skipIndex = (page - 1) * limit;
+    const total = await MemberModel.countDocuments({ community: communityId });
+    const membersData = await MemberModel.find({ community: communityId });
+
+    const modifiedCommunities: any = [];
+
+    for (const memberData of membersData) {
+      const userData = await UserModel.findOne({ id: memberData.user });
+      if (!userData) return res.status(400).json({ message: "user not found" });
+
+      const roleData = await RoleModel.findOne({ id: memberData.role });
+      if (!roleData) return res.status(400).json({ message: "role not found" });
+
+      const singleData = {
+        id: memberData.id,
+        community: memberData.community,
+        user: {
+          id: userData.id,
+          name: userData.name,
+        },
+        role: {
+          id: roleData.id,
+          name: roleData.name,
+        },
+        created_at: memberData.created_at,
+      };
+      modifiedCommunities.push(singleData);
+    }
+
+    res.status(200).json({
+      status: true,
+      content: {
+        meta: {
+          total: total,
+          pages: Math.ceil(total / limit),
+          page: page,
+        },
+        data: modifiedCommunities,
+      },
+    });
   } catch (err) {
     console.log(err);
   }
@@ -120,6 +165,50 @@ export const getMyOwnedCommunity = async (req: Request, res: Response) => {
 
 export const getMyJoinedCommunity = async (req: Request, res: Response) => {
   try {
+    const userID = getIdFromToken(req);
+
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skipIndex = (page - 1) * limit;
+    const total = await MemberModel.countDocuments({ user: userID });
+    const memberships = await MemberModel.find({ user: userID });
+
+    const communityIDs = memberships.map((membership) => membership.community);
+
+    const modifiedCommunities: any = [];
+
+    for (const community of communityIDs) {
+      const communityData = await CommunityModel.findOne({ id: community });
+      if (!communityData) return res.status(400).json({ message: "community not found" });
+
+      const owner = await UserModel.findOne({ id: communityData.owner });
+      if (!owner) return res.status(400).json({ message: "owner not found" });
+
+      const singleData = {
+        id: community,
+        name: communityData.name,
+        slug: communityData.slug,
+        owner: {
+          id: owner.id,
+          name: owner.name,
+        },
+        created_at: communityData.created_at,
+        updated_at: communityData.updated_at,
+      };
+      modifiedCommunities.push(singleData);
+    }
+
+    res.status(200).json({
+      status: true,
+      content: {
+        meta: {
+          total: total,
+          pages: Math.ceil(total / limit),
+          page: page,
+        },
+        data: modifiedCommunities,
+      },
+    });
   } catch (err) {
     console.log(err);
   }
