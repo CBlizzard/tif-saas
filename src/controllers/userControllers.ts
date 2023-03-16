@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import validator from "validator";
 import { Snowflake } from "@theinternetfolks/snowflake";
 import { UserModel } from "../models/userModel";
-import { createAuthToken } from "../utils/createAuthToken";
+import { createToken } from "../utils/createToken";
 import { getToken } from "../utils/getToken";
 
 // ======================
@@ -45,7 +45,7 @@ export const signUp = async (req: Request, res: Response) => {
     const hash = await bcrypt.hash(password, salt);
     const user = await UserModel.create({ id, name, email, password: hash, created_at });
 
-    const token = createAuthToken({ id: id, email: email });
+    const token = createToken({ id: id, email: email });
 
     res.status(200).json({
       status: true,
@@ -78,7 +78,7 @@ export const signIn = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Incorrect Password" });
     }
 
-    const token = createAuthToken({ id: user.id, email: user.email });
+    const token = createToken({ id: user.id, email: user.email });
 
     res.status(200).json({
       status: true,
