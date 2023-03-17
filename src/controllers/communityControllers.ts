@@ -1,4 +1,4 @@
-import { Request, Response, response } from "express";
+import { NextFunction, Request, Response } from "express";
 import validator from "validator";
 import { Snowflake } from "@theinternetfolks/snowflake";
 import { CommunityModel } from "../models/communityModel";
@@ -6,24 +6,24 @@ import { MemberModel } from "../models/memberModel";
 import { UserModel } from "../models/userModel";
 import { RoleModel } from "../models/roleModel";
 import { getIdFromToken } from "../utils/getIdFromToken";
+import { createErrMessage } from "../utils/errors";
 
-export const createCommunity = async (req: Request, res: Response) => {
+export const createCommunity = async (req: Request, res: Response, next: NextFunction) => {
   const { name } = req.body;
   const slug = name.toLowerCase();
   const created_at = new Date().toISOString();
   const id = Snowflake.generate();
 
+  const errorArray = [];
   try {
     const userID = getIdFromToken(req);
 
     //validate
-    if (!name) {
-      return res.status(400).json({ message: "please give name to the community" });
-    }
-
     if (!validator.isLength(name, { min: 2 })) {
-      return res.status(400).json({ message: "minimum 2 characters required in name" });
+      const err = createErrMessage({ code: "INVALID_INPUT", param: "name" });
+      errorArray.push(err);
     }
+    if (errorArray.length > 0) return next(errorArray);
 
     const community = await CommunityModel.create({
       id: id,
