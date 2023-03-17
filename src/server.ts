@@ -7,6 +7,7 @@ import communityRoutes from "./routes/communityRoutes.js";
 import memberRoutes from "./routes/memberRoutes.js";
 import roleRoutes from "./routes/roleRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 
 const app: Express = express();
 const PORT = process.env.PORT || 8000;
@@ -22,6 +23,8 @@ app.use("/v1/community", communityRoutes);
 app.use("/v1/member", memberRoutes);
 app.use("/v1/role", roleRoutes);
 app.use("/v1/auth", userRoutes);
+
+app.use(errorMiddleware);
 
 // connect to DB
 connect(process.env.MONGO_URI!)
