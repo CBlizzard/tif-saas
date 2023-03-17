@@ -1,12 +1,21 @@
 import { Request } from "express";
 import { MemberModel } from "../models/memberModel";
 import { getIdFromToken } from "./getIdFromToken";
+import { RoleModel } from "../models/roleModel";
 
-const ADMIN_ID = "7042071572520321459";
-const MOD_ID = "7042071732140010545";
+const getIDs = async () => {
+  const adminData = await RoleModel.find({ name: "Community Admin" });
+  const ADMIN_ID = adminData.map((a) => a.id);
+
+  const modData = await RoleModel.find({ name: "Community Moderator" });
+  const MOD_ID = modData.map((m) => m.id);
+
+  return { ADMIN_ID, MOD_ID };
+};
 
 export const canAddIn = async (req: Request) => {
   const userId = getIdFromToken(req);
+  const { ADMIN_ID } = await getIDs();
 
   const memberships = await MemberModel.find({
     $and: [{ user: userId }, { role: ADMIN_ID }],
@@ -18,6 +27,7 @@ export const canAddIn = async (req: Request) => {
 
 export const canRemoveIn = async (req: Request) => {
   const signedInUserId = getIdFromToken(req);
+  const { ADMIN_ID, MOD_ID } = await getIDs();
 
   const memberships = await MemberModel.find({
     $and: [
