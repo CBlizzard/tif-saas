@@ -49,7 +49,7 @@ export const getAllCommunity = async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 10;
     const skipIndex = (page - 1) * limit;
     const total = await CommunityModel.countDocuments();
-    const communities = await CommunityModel.find().limit(limit).skip(skipIndex);
+    const communities = await CommunityModel.find().skip(skipIndex).limit(limit);
 
     const modifiedCommunities = communities.map((community) => ({
       id: community.id,
@@ -139,7 +139,7 @@ export const getMyOwnedCommunity = async (req: Request, res: Response) => {
     const skipIndex = (page - 1) * limit;
     const total = await CommunityModel.countDocuments();
 
-    const myCommunities = await CommunityModel.find({ owner: userID });
+    const myCommunities = await CommunityModel.find({ owner: userID }).skip(skipIndex).limit(limit);
     const modifiedMyCommunities = myCommunities.map((community) => ({
       id: community.id,
       name: community.name,
@@ -173,7 +173,7 @@ export const getMyJoinedCommunity = async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 10;
     const skipIndex = (page - 1) * limit;
     const total = await MemberModel.countDocuments({ user: userID });
-    const memberships = await MemberModel.find({ user: userID });
+    const memberships = await MemberModel.find({ user: userID }).skip(skipIndex).limit(limit);
 
     const communityIDs = memberships.map((membership) => membership.community);
 
