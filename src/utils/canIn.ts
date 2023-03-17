@@ -3,12 +3,12 @@ import { MemberModel } from "../models/memberModel";
 import { getIdFromToken } from "./getIdFromToken";
 import { RoleModel } from "../models/roleModel";
 
-const getIDs = async () => {
+export const getIDs = async () => {
   const adminData = await RoleModel.find({ name: "Community Admin" });
-  const ADMIN_ID = adminData.map((a) => a.id);
+  const ADMIN_ID = adminData.map((a) => a.id)[0];
 
   const modData = await RoleModel.find({ name: "Community Moderator" });
-  const MOD_ID = modData.map((m) => m.id);
+  const MOD_ID = modData.map((m) => m.id)[0];
 
   return { ADMIN_ID, MOD_ID };
 };

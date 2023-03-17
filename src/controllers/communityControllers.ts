@@ -7,6 +7,7 @@ import { UserModel } from "../models/userModel";
 import { RoleModel } from "../models/roleModel";
 import { getIdFromToken } from "../utils/getIdFromToken";
 import { createErrMessage } from "../utils/errors";
+import { getIDs } from "../utils/canIn";
 
 export const createCommunity = async (req: Request, res: Response, next: NextFunction) => {
   const { name } = req.body;
@@ -16,7 +17,8 @@ export const createCommunity = async (req: Request, res: Response, next: NextFun
 
   const errorArray = [];
   try {
-    const userID = getIdFromToken(req);
+    const userID = await getIdFromToken(req);
+    const { ADMIN_ID } = await getIDs();
 
     //validate
     if (!validator.isLength(name, { min: 2 })) {
@@ -38,6 +40,14 @@ export const createCommunity = async (req: Request, res: Response, next: NextFun
       owner: userID,
       created_at: created_at,
       updated_at: created_at,
+    });
+
+    const member = await MemberModel.create({
+      id: Snowflake.generate(),
+      community: id,
+      user: userID,
+      role: ADMIN_ID,
+      created_at: created_at,
     });
 
     res.status(200).json({
