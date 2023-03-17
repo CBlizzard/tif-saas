@@ -1,22 +1,23 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { RoleModel } from "../models/roleModel";
 import validator from "validator";
 import { Snowflake } from "@theinternetfolks/snowflake";
+import { createErrMessage } from "../utils/errors";
 
-export const createRole = async (req: Request, res: Response) => {
+export const createRole = async (req: Request, res: Response, next: NextFunction) => {
   const { name } = req.body;
   const created_at = new Date().toISOString();
   const id = Snowflake.generate();
 
+  const errorArray = [];
+
   try {
     //validate
-    if (!name) {
-      return res.status(400).json({ message: "please give name to the role" });
-    }
-
     if (!validator.isLength(name, { min: 2 })) {
-      return res.status(400).json({ message: "minimum 2 characters required in name" });
+      const err = createErrMessage({ code: "INVALID_INPUT", param: "name" });
+      errorArray.push(err);
     }
+    if (errorArray.length > 0) return next(errorArray);
 
     // create role
     const role = await RoleModel.create({ id, name, created_at, updated_at: created_at });
