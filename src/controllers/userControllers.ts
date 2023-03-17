@@ -28,6 +28,11 @@ export const signUp = async (req: Request, res: Response, next: NextFunction) =>
       errorArray.push(err);
     }
 
+    if (!validator.isStrongPassword(password)) {
+      const err = createErrMessage({ code: "WEAK_INPUT" });
+      errorArray.push(err);
+    }
+
     if (!validator.isEmail(email)) {
       const err = createErrMessage({ code: "INVALID_INPUT", param: "email" });
       errorArray.push(err);

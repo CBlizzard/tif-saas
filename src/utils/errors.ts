@@ -60,6 +60,9 @@ export const createErrMessage = ({ code, param }: ErrorMessage) => {
     case "INPUT_ERROR":
       message = "Please fill all the fields.";
       break;
+    case "WEAK_INPUT":
+      message = "Please use strong password.";
+      break;
     default:
       message = "Something went wrong.";
       break;
