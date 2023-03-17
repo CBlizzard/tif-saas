@@ -23,6 +23,10 @@ export const createErrMessage = ({ code, param }: ErrorMessage) => {
         message = "User with this email already exists.";
         break;
       }
+      if (param === "community") {
+        message = "Community with this name already exists.";
+        break;
+      }
       if (param === undefined) {
         message = "User is already added in the community.";
         break;

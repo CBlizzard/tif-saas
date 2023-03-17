@@ -40,10 +40,14 @@ export const addMember = async (req: Request, res: Response, next: NextFunction)
       errorArray.push(err);
     }
 
-    const canAddInCommunities = await canAddIn(req);
-    if (!canAddInCommunities.includes(community)) {
-      const err = createErrMessage({ code: "NOT_ALLOWED_ACCESS" });
-      errorArray.push(err);
+    const isCommunityOwner = await CommunityModel.findOne({ id: community, owner: user });
+
+    if (!isCommunityOwner) {
+      const canAddInCommunities = await canAddIn(req);
+      if (!canAddInCommunities.includes(community)) {
+        const err = createErrMessage({ code: "NOT_ALLOWED_ACCESS" });
+        errorArray.push(err);
+      }
     }
 
     if (errorArray.length > 0) return next(errorArray);
@@ -68,39 +72,6 @@ export const addMember = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-// export const removeMember = async (req: Request, res: Response, next: NextFunction) => {
-//   if (!req.params.id) return res.status(400).json({ message: "id is required" });
-//   const userIdToDelete = req.params.id;
-
-//   const errorArray = [];
-//   try {
-//     const userExits = await UserModel.findOne({ id: userIdToDelete });
-//     if (!userExits) {
-//       const err = { code: "RESOURCE_NOT_FOUND" };
-//       errorArray.push(err);
-//     }
-
-//     const communitiesToRemoveFrom = await canRemoveIn(req);
-
-//     // +++++++
-//     // check if
-
-//     // +++++++
-
-//     if (errorArray.length > 0) return next(errorArray);
-
-//     // for (const community of communitiesToRemoveFrom) {
-//     //   await MemberModel.deleteOne({ community: community, user: userIdToDelete });
-//     // }
-
-//     res.status(200).json({
-//       status: true,
-//     });
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
-
 export const removeMember = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.params.id) return res.status(400).json({ message: "id is required" });
   const userIdToDelete = req.params.id;
@@ -112,10 +83,6 @@ export const removeMember = async (req: Request, res: Response, next: NextFuncti
       const err = { code: "RESOURCE_NOT_FOUND" };
       errorArray.push(err);
     }
-
-    // const ADMIN_ID = await RoleModel.findOne({ name: "Community Admin" });
-    // const MOD_ID = await RoleModel.findOne({ name: "Community Moderator" });
-    // const MEMBER_ID = await RoleModel.findOne({ name: "Community Member" });
 
     const communitiesToRemoveFrom = await canRemoveIn(req);
 

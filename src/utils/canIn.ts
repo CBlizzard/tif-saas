@@ -1,8 +1,6 @@
 import { Request } from "express";
 import { MemberModel } from "../models/memberModel";
 import { getIdFromToken } from "./getIdFromToken";
-import { CommunityModel } from "../models/communityModel";
-import { RoleModel } from "../models/roleModel";
 
 const ADMIN_ID = "7042071572520321459";
 const MOD_ID = "7042071732140010545";

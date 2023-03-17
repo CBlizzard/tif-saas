@@ -23,6 +23,12 @@ export const createCommunity = async (req: Request, res: Response, next: NextFun
       const err = createErrMessage({ code: "INVALID_INPUT", param: "name" });
       errorArray.push(err);
     }
+
+    const communityExists = await CommunityModel.findOne({ name: name });
+    if (communityExists) {
+      const err = createErrMessage({ code: "RESOURCE_EXISTS", param: "community" });
+      errorArray.push(err);
+    }
     if (errorArray.length > 0) return next(errorArray);
 
     const community = await CommunityModel.create({
