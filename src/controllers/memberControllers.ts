@@ -68,6 +68,39 @@ export const addMember = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
+// export const removeMember = async (req: Request, res: Response, next: NextFunction) => {
+//   if (!req.params.id) return res.status(400).json({ message: "id is required" });
+//   const userIdToDelete = req.params.id;
+
+//   const errorArray = [];
+//   try {
+//     const userExits = await UserModel.findOne({ id: userIdToDelete });
+//     if (!userExits) {
+//       const err = { code: "RESOURCE_NOT_FOUND" };
+//       errorArray.push(err);
+//     }
+
+//     const communitiesToRemoveFrom = await canRemoveIn(req);
+
+//     // +++++++
+//     // check if
+
+//     // +++++++
+
+//     if (errorArray.length > 0) return next(errorArray);
+
+//     // for (const community of communitiesToRemoveFrom) {
+//     //   await MemberModel.deleteOne({ community: community, user: userIdToDelete });
+//     // }
+
+//     res.status(200).json({
+//       status: true,
+//     });
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
+
 export const removeMember = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.params.id) return res.status(400).json({ message: "id is required" });
   const userIdToDelete = req.params.id;
@@ -80,17 +113,24 @@ export const removeMember = async (req: Request, res: Response, next: NextFuncti
       errorArray.push(err);
     }
 
+    // const ADMIN_ID = await RoleModel.findOne({ name: "Community Admin" });
+    // const MOD_ID = await RoleModel.findOne({ name: "Community Moderator" });
+    // const MEMBER_ID = await RoleModel.findOne({ name: "Community Member" });
+
     const communitiesToRemoveFrom = await canRemoveIn(req);
-
-    // +++++++
-    // check if
-
-    // +++++++
 
     if (errorArray.length > 0) return next(errorArray);
 
+    let i = 0;
     for (const community of communitiesToRemoveFrom) {
       await MemberModel.deleteOne({ community: community, user: userIdToDelete });
+      i++;
+    }
+
+    if (i === 0) {
+      const err = createErrMessage({ code: "NOT_ALLOWED_ACCESS" });
+      errorArray.push(err);
+      return next(errorArray);
     }
 
     res.status(200).json({
