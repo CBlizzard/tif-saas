@@ -85,7 +85,9 @@ export const getAllCommunityMembers = async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 10;
     const skipIndex = (page - 1) * limit;
     const total = await MemberModel.countDocuments({ community: communityId });
-    const membersData = await MemberModel.find({ community: communityId });
+    const membersData = await MemberModel.find({ community: communityId })
+      .skip(skipIndex)
+      .limit(limit);
 
     const modifiedCommunities: any = [];
 
