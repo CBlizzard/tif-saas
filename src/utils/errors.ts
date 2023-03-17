@@ -23,8 +23,10 @@ export const createErrMessage = ({ code, param }: ErrorMessage) => {
         message = "User with this email already exists.";
         break;
       }
-      message = "User is already added in the community.";
-      break;
+      if (param === undefined) {
+        message = "User is already added in the community.";
+        break;
+      }
     case "INVALID_CREDENTIALS":
       message = "The credentials you provided are invalid.";
       break;
@@ -34,17 +36,20 @@ export const createErrMessage = ({ code, param }: ErrorMessage) => {
     case "RESOURCE_NOT_FOUND":
       if (param === "community") {
         message = "Community not found.";
+        break;
       }
       if (param === "role") {
         message = "Role not found.";
+        break;
       }
       if (param === "user") {
         message = "User not found.";
+        break;
       }
-      if (param === "member") {
+      if (param === undefined || param === null) {
         message = "Member not found.";
+        break;
       }
-      break;
     case "NOT_ALLOWED_ACCESS":
       message = "You are not authorized to perform this action.";
       break;
@@ -56,9 +61,6 @@ export const createErrMessage = ({ code, param }: ErrorMessage) => {
       break;
   }
 
-  return {
-    ...(param && { param }),
-    message,
-    code,
-  };
+  if (param) return { param, message, code };
+  return { message, code };
 };
