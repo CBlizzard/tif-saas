@@ -153,7 +153,7 @@ export const getMyOwnedCommunity = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skipIndex = (page - 1) * limit;
-    const total = await CommunityModel.countDocuments();
+    const total = await CommunityModel.countDocuments({ owner: userID });
 
     const myCommunities = await CommunityModel.find({ owner: userID }).skip(skipIndex).limit(limit);
     const modifiedMyCommunities = myCommunities.map((community) => ({
